@@ -6,12 +6,14 @@
 
 int takingCityName(char cityName[Max_city][Max_character]);
 void displayCities(char cityName[Max_city][Max_character], int count);
+int renameCity(char cityName[Max_city][Max_character], int count);
 
 int main()
 {
     char cityName[Max_city][Max_character];
     int cityCount=takingCityName(cityName);
    displayCities(cityName,cityCount);
+   renameCity(cityName, cityCount);
 }
 
 int takingCityName(char cityName[Max_city][Max_character])
@@ -45,7 +47,29 @@ int takingCityName(char cityName[Max_city][Max_character])
 void displayCities(char cityName[Max_city][Max_character], int count)
 {
     printf("\nList of Cities:\n");
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++)
+    {
         printf("%d. %s\n", i + 1, cityName[i]);
     }
+}
+
+int renameCity(char cityName[Max_city][Max_character], int count)
+{
+    int keyNum;
+    printf("Enter the number of the city you want to rename (1–%d): ", count);
+    scanf("%d", &keyNum);
+    getchar();
+    if (keyNum <= 0 || keyNum > count)
+    {
+        printf("Invalid number! Please try again.\n");
+        renameCity(cityName, count); // recall safely
+    }
+    int keyN = keyNum - 1;
+    printf("Enter the new name of the city: ");
+    fgets(cityName[keyN], Max_character, stdin);
+    cityName[keyN][strcspn(cityName[keyN], "\n")] = '\0';
+    printf("City renamed successfully!\n");
+    displayCities(cityName, count);
+
+    return 0;
 }
