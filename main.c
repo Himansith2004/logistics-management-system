@@ -7,6 +7,7 @@
 int takingCityName(char cityName[Max_city][Max_character]);
 void displayCities(char cityName[Max_city][Max_character], int count);
 int renameCity(char cityName[Max_city][Max_character], int count);
+int deleteCityName(char cityName[Max_city][Max_character], int *count);
 
 int main()
 {
@@ -14,6 +15,7 @@ int main()
     int cityCount=takingCityName(cityName);
    displayCities(cityName,cityCount);
    renameCity(cityName, cityCount);
+   deleteCityName(cityName,&cityCount);
 }
 
 int takingCityName(char cityName[Max_city][Max_character])
@@ -72,4 +74,30 @@ int renameCity(char cityName[Max_city][Max_character], int count)
     displayCities(cityName, count);
 
     return 0;
+}
+
+int deleteCityName(char cityName[Max_city][Max_character], int *count)
+{
+    int keyNum;
+    printf("Enter the number of the city you want to Delete (1–%d): ", count);
+    scanf("%d", &keyNum);
+    getchar();
+    if (keyNum <= 0 || keyNum > count)
+    {
+        printf("Invalid number! Please try again.\n");
+        deleteCityName(cityName,count);
+         // recall safely
+    }
+    int keyN = keyNum - 1;
+
+    int i=keyN;
+    for(i;i<*count-1;i++)
+    {
+
+        strcpy(cityName[i],cityName[i+1]);
+    }
+    (*count)--;
+    printf("City deleted successfully!\n");
+    displayCities(cityName,*count);
+
 }
