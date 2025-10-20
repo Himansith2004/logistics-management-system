@@ -8,14 +8,19 @@ int takingCityName(char cityName[Max_city][Max_character]);
 void displayCities(char cityName[Max_city][Max_character], int count);
 int renameCity(char cityName[Max_city][Max_character], int count);
 int deleteCityName(char cityName[Max_city][Max_character], int *count);
+void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city],int count);
+void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
 
 int main()
 {
     char cityName[Max_city][Max_character];
     int cityCount=takingCityName(cityName);
+    int distanceCity[Max_city][Max_city];
    displayCities(cityName,cityCount);
    renameCity(cityName, cityCount);
    deleteCityName(cityName,&cityCount);
+   takingDistance(cityName,distanceCity,cityCount);
+   displayDistanceTable(cityName,distanceCity,cityCount);
 }
 
 int takingCityName(char cityName[Max_city][Max_character])
@@ -100,4 +105,45 @@ int deleteCityName(char cityName[Max_city][Max_character], int *count)
     printf("City deleted successfully!\n");
     displayCities(cityName,*count);
 
+}
+
+void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city],int count)
+{
+    printf("\n--- Enter Distances Between Cities ---\n");
+    for(int i=0;i<count;i++)
+    {
+        for(int j=0;j<count;j++)
+        {
+            if (i == j)
+            {
+                distanceCity[i][j] = 0;
+                break;
+            }
+            printf("Enter distance between %s and %s (in km): ", cityName[i], cityName[j]);
+            scanf("%d", &distanceCity[i][j]);
+            distanceCity[j][i] = distanceCity[i][j];
+        }
+    }
+ printf("\nAll distances recorded successfully!\n");
+}
+
+void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count)
+{
+    printf("\n\n===== Distance Table (in km) =====\n\n");
+    printf("%15s", "");
+    for (int i = 0; i < count; i++)
+    {
+        printf("%15s", cityName[i]);
+    }
+    printf("\n");
+    for (int i = 0; i < count; i++)
+    {
+        printf("%15s", cityName[i]);
+        for (int j = 0; j < count; j++)
+        {
+            printf("%15d", distanceCity[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
 }
