@@ -10,17 +10,20 @@ int renameCity(char cityName[Max_city][Max_character], int count);
 int deleteCityName(char cityName[Max_city][Max_character], int *count);
 void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city],int count);
 void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
+int editCityDistance(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
 
 int main()
 {
     char cityName[Max_city][Max_character];
     int cityCount=takingCityName(cityName);
     int distanceCity[Max_city][Max_city];
-   displayCities(cityName,cityCount);
-   renameCity(cityName, cityCount);
-   deleteCityName(cityName,&cityCount);
-   takingDistance(cityName,distanceCity,cityCount);
-   displayDistanceTable(cityName,distanceCity,cityCount);
+    displayCities(cityName,cityCount);
+    renameCity(cityName, cityCount);
+    deleteCityName(cityName,&cityCount);
+    takingDistance(cityName,distanceCity,cityCount);
+    displayDistanceTable(cityName,distanceCity,cityCount);
+    editCityDistance(cityName,distanceCity,cityCount);
+
 }
 
 int takingCityName(char cityName[Max_city][Max_character])
@@ -28,7 +31,7 @@ int takingCityName(char cityName[Max_city][Max_character])
     int count=0;
     char choice;
 
-    for(int i=0;i<Max_city;i++)
+    for(int i=0; i<Max_city; i++)
     {
         printf("Enter the %d city: ",i+1);
         fgets(cityName[i],Max_character,stdin);
@@ -63,7 +66,7 @@ void displayCities(char cityName[Max_city][Max_character], int count)
 int renameCity(char cityName[Max_city][Max_character], int count)
 {
     int keyNum;
-    printf("Enter the number of the city you want to rename (1ñ%d): ", count);
+    printf("Enter the number of the city you want to rename (1‚Äì%d): ", count);
     scanf("%d", &keyNum);
     getchar();
     if (keyNum <= 0 || keyNum > count)
@@ -84,19 +87,19 @@ int renameCity(char cityName[Max_city][Max_character], int count)
 int deleteCityName(char cityName[Max_city][Max_character], int *count)
 {
     int keyNum;
-    printf("Enter the number of the city you want to Delete (1ñ%d): ", count);
+    printf("Enter the number of the city you want to Delete (1‚Äì%d): ", count);
     scanf("%d", &keyNum);
     getchar();
     if (keyNum <= 0 || keyNum > count)
     {
         printf("Invalid number! Please try again.\n");
         deleteCityName(cityName,count);
-         // recall safely
+        // recall safely
     }
     int keyN = keyNum - 1;
 
     int i=keyN;
-    for(i;i<*count-1;i++)
+    for(i; i<*count-1; i++)
     {
 
         strcpy(cityName[i],cityName[i+1]);
@@ -110,9 +113,9 @@ int deleteCityName(char cityName[Max_city][Max_character], int *count)
 void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city],int count)
 {
     printf("\n--- Enter Distances Between Cities ---\n");
-    for(int i=0;i<count;i++)
+    for(int i=0; i<count; i++)
     {
-        for(int j=0;j<count;j++)
+        for(int j=0; j<count; j++)
         {
             if (i == j)
             {
@@ -124,26 +127,66 @@ void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_
             distanceCity[j][i] = distanceCity[i][j];
         }
     }
- printf("\nAll distances recorded successfully!\n");
+    printf("\nAll distances recorded successfully!\n");
 }
 
 void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count)
 {
     printf("\n\n===== Distance Table (in km) =====\n\n");
-    printf("%15s", "");
+    printf("%-5s", "");
     for (int i = 0; i < count; i++)
     {
-        printf("%15s", cityName[i]);
+        printf("%-15s", cityName[i]);
     }
+    printf("\n");
+    for (int i = 0; i < (count + 1) * 15; i++)
+        printf("-");
     printf("\n");
     for (int i = 0; i < count; i++)
     {
-        printf("%15s", cityName[i]);
+        printf("%-15s", cityName[i]);
         for (int j = 0; j < count; j++)
         {
-            printf("%15d", distanceCity[i][j]);
+            printf("%-15d", distanceCity[i][j]);
         }
         printf("\n");
     }
     printf("\n");
 }
+
+int editCityDistance(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count)
+{
+    int i, j, newDistance;
+
+    printf("\nEnter the numbers of two cities to edit the distance between them:\n");
+    printf("Enter the number of the first city : ");
+    scanf("%d", &i);
+    printf("Enter the number of the second city: ");
+    scanf("%d", &j);
+
+    if (i <= 0 || j <= 0 || i > count || j > count || i == j)
+    {
+        printf("‚ùå Invalid city numbers! Please enter different valid city indices.\n");
+        return 0;
+    }
+    printf("Enter the new distance between %s and %s (in km): ",cityName[i - 1], cityName[j - 1]);
+    scanf("%d", &newDistance);
+    distanceCity[i - 1][j - 1] = newDistance;
+    distanceCity[j - 1][i - 1] = newDistance;
+
+    printf(" Distance between %s and %s updated successfully!\n",cityName[i - 1], cityName[j - 1]);
+    displayDistanceTable(cityName, distanceCity, count);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
