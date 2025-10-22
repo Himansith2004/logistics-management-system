@@ -3,6 +3,7 @@
 #include <string.h>
 #define Max_city 50
 #define Max_character 40
+#define Fuel_cost 310
 
 int takingCityName(char cityName[Max_city][Max_character]);
 void displayCities(char cityName[Max_city][Max_character], int count);
@@ -11,6 +12,7 @@ int deleteCityName(char cityName[Max_city][Max_character], int *count);
 void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city],int count);
 void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
 int editCityDistance(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
+void calcDeliveryCost(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
 
 int main()
 {
@@ -23,6 +25,8 @@ int main()
     takingDistance(cityName,distanceCity,cityCount);
     displayDistanceTable(cityName,distanceCity,cityCount);
     editCityDistance(cityName,distanceCity,cityCount);
+    calcDeliveryCost(cityName,distanceCity,cityCount);
+
 
 }
 
@@ -66,7 +70,7 @@ void displayCities(char cityName[Max_city][Max_character], int count)
 int renameCity(char cityName[Max_city][Max_character], int count)
 {
     int keyNum;
-    printf("Enter the number of the city you want to rename (1–%d): ", count);
+    printf("Enter the number of the city you want to rename : ");
     scanf("%d", &keyNum);
     getchar();
     if (keyNum <= 0 || keyNum > count)
@@ -87,7 +91,7 @@ int renameCity(char cityName[Max_city][Max_character], int count)
 int deleteCityName(char cityName[Max_city][Max_character], int *count)
 {
     int keyNum;
-    printf("Enter the number of the city you want to Delete (1–%d): ", count);
+    printf("Enter the number of the city you want to Delete : ");
     scanf("%d", &keyNum);
     getchar();
     if (keyNum <= 0 || keyNum > count)
@@ -180,7 +184,75 @@ int editCityDistance(char cityName[Max_city][Max_character], int distanceCity[Ma
     return 0;
 }
 
+void calcDeliveryCost(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count)
+{
+    char *vehicleType[] = {"Van", "Truck", "Lorry"};
+    int capacity[] = {1000, 5000, 10000};
+    float rate[] = {30, 40, 80};
+    float speed[] = {60, 50, 45};
+    float efficiency[] = {12, 6, 4};
 
+    displayCities(cityName, count);
+    int src, dest, vType;
+    float weight;
+    printf("\nEnter source city number: ");
+    scanf("%d", &src);
+    printf("Enter destination city number: ");
+    scanf("%d", &dest);
+    printf("Enter delivery weight (kg): ");
+    scanf("%f", &weight);
+    printf("Select vehicle type (1=Van, 2=Truck, 3=Lorry): ");
+    scanf("%d", &vType);
+    if (src <= 0 || dest <= 0 || src > count || dest > count || src == dest)
+    {
+        printf("\nInvalid city selection! Source and destination must be different.\n");
+        return;
+    }
+
+    if (vType < 1 || vType > 3)
+    {
+        printf("\nInvalid vehicle type selection!\n");
+        return;
+    }
+
+    if (weight > capacity[vType - 1])
+    {
+        printf("\nWeight exceeds the capacity of the selected vehicle (%d kg max)!\n", capacity[vType - 1]);
+        return;
+    }
+
+    float distance = distanceCity[src - 1][dest - 1];
+    float rateOfCost = rate[vType - 1];
+    float speedOfVehicle = speed[vType - 1];
+    float fuelEffi = efficiency[vType - 1];
+    float fuelPrice=Fuel_cost;
+    float baseCost = distance*rateOfCost*(1+(weight/capacity[vType - 1]));
+    float fuelUsed = distance/fuelEffi;
+    float fuelCost = fuelUsed*fuelPrice;
+    float operationalCost = baseCost+fuelCost;
+    float profit = operationalCost*0.25;
+    float customerCharge = operationalCost + profit;
+    float estTime = distance/speedOfVehicle;
+
+    printf("\n======================================================\n");
+    printf("DELIVERY COST ESTIMATION\n");
+    printf("------------------------------------------------------\n");
+    printf("From: %s\n", cityName[src - 1]);
+    printf("To: %s\n", cityName[dest - 1]);
+    printf("Minimum Distance: %.2f km\n", distance);
+    printf("Vehicle: %s\n", vehicleType[vType - 1]);
+    printf("Weight: %.2f kg\n", weight);
+    printf("------------------------------------------------------\n");
+    printf("Base Cost: %.0f x %.0f x (1 + %.0f/%.0f) = %.2f LKR\n",distance, rateOfCost, weight, (float)capacity[vType - 1], baseCost);
+    printf("Fuel Used: %.2f L\n", fuelUsed);
+    printf("Fuel Cost: %.2f LKR\n", fuelCost);
+    printf("Operational Cost: %.2f LKR\n", operationalCost);
+    printf("Profit: %.2f LKR\n", profit);
+    printf("Customer Charge: %.2f LKR\n", customerCharge);
+    printf("Estimated Time: %.2f hours\n", estTime);
+    printf("======================================================\n");
+
+}
 
 
 
