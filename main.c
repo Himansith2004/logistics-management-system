@@ -4,6 +4,8 @@
 #define Max_city 50
 #define Max_character 40
 #define Fuel_cost 310
+#define Max_deliveries 50
+#define Delivery_fields 6
 
 int takingCityName(char cityName[Max_city][Max_character]);
 void displayCities(char cityName[Max_city][Max_character], int count);
@@ -12,23 +14,80 @@ int deleteCityName(char cityName[Max_city][Max_character], int *count);
 void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city],int count);
 void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
 int editCityDistance(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
-void calcDeliveryCost(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
+void calcDeliveryCost(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count,float deliveries[][6],int *deliveryCount);
+void viewAllDeliveries(char cityName[Max_city][Max_character],float deliveries[Max_deliveries][6], int deliveryCount);
 
 int main()
 {
     char cityName[Max_city][Max_character];
-    int cityCount=takingCityName(cityName);
     int distanceCity[Max_city][Max_city];
-    displayCities(cityName,cityCount);
-    renameCity(cityName, cityCount);
-    deleteCityName(cityName,&cityCount);
-    takingDistance(cityName,distanceCity,cityCount);
-    displayDistanceTable(cityName,distanceCity,cityCount);
-    editCityDistance(cityName,distanceCity,cityCount);
-    calcDeliveryCost(cityName,distanceCity,cityCount);
+    float deliveries[Max_deliveries][Delivery_fields];
+    int deliveryCount = 0;
 
+    int cityCount = takingCityName(cityName);
+    takingDistance(cityName, distanceCity, cityCount);
+    displayDistanceTable(cityName, distanceCity, cityCount);
 
+    int choice;
+    do {
+        printf("\n========== MAIN MENU ==========\n");
+        printf("1. Display Cities\n");
+        printf("2. Rename City\n");
+        printf("3. Delete City\n");
+        printf("4. Edit City Distance\n");
+        printf("5. Calculate Delivery Cost\n");
+        printf("6. View All Deliveries\n");
+        printf("0. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        getchar(); // consume newline
+
+        switch (choice)
+        {
+            case 1:
+                displayCities(cityName, cityCount);
+                displayDistanceTable(cityName, distanceCity, cityCount);
+                break;
+
+            case 2:
+                renameCity(cityName, cityCount);
+                displayCities(cityName, cityCount);
+                displayDistanceTable(cityName, distanceCity, cityCount);
+                break;
+
+            case 3:
+                deleteCityName(cityName, &cityCount);
+                displayCities(cityName, cityCount);
+                displayDistanceTable(cityName, distanceCity, cityCount);
+                break;
+
+            case 4:
+                editCityDistance(cityName, distanceCity, cityCount);
+                displayDistanceTable(cityName, distanceCity, cityCount);
+                break;
+
+            case 5:
+                calcDeliveryCost(cityName, distanceCity, cityCount,deliveries, &deliveryCount);
+                break;
+
+            case 6:
+                viewAllDeliveries(cityName, deliveries, deliveryCount);
+                break;
+
+            case 0:
+                printf("\nExiting program...\n");
+                break;
+
+            default:
+                printf("\nInvalid choice! Please try again.\n");
+        }
+
+    } while (choice != 0);
+
+    return 0;
 }
+
+
 
 int takingCityName(char cityName[Max_city][Max_character])
 {
@@ -76,7 +135,7 @@ int renameCity(char cityName[Max_city][Max_character], int count)
     if (keyNum <= 0 || keyNum > count)
     {
         printf("Invalid number! Please try again.\n");
-        renameCity(cityName, count); // recall safely
+        return renameCity(cityName, count);
     }
     int keyN = keyNum - 1;
     printf("Enter the new name of the city: ");
@@ -97,8 +156,7 @@ int deleteCityName(char cityName[Max_city][Max_character], int *count)
     if (keyNum <= 0 || keyNum > count)
     {
         printf("Invalid number! Please try again.\n");
-        deleteCityName(cityName,count);
-        // recall safely
+        return deleteCityName(cityName,count);
     }
     int keyN = keyNum - 1;
 
@@ -170,7 +228,7 @@ int editCityDistance(char cityName[Max_city][Max_character], int distanceCity[Ma
 
     if (i <= 0 || j <= 0 || i > count || j > count || i == j)
     {
-        printf("❌ Invalid city numbers! Please enter different valid city indices.\n");
+        printf("Invalid city numbers! Please enter different valid city indices.\n");
         return 0;
     }
     printf("Enter the new distance between %s and %s (in km): ",cityName[i - 1], cityName[j - 1]);
@@ -184,7 +242,7 @@ int editCityDistance(char cityName[Max_city][Max_character], int distanceCity[Ma
     return 0;
 }
 
-void calcDeliveryCost(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count)
+void calcDeliveryCost(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count,float deliveries[][6],int *deliveryCount)
 {
     char *vehicleType[] = {"Van", "Truck", "Lorry"};
     int capacity[] = {1000, 5000, 10000};
@@ -252,6 +310,43 @@ void calcDeliveryCost(char cityName[Max_city][Max_character], int distanceCity[M
     printf("Estimated Time: %.2f hours\n", estTime);
     printf("======================================================\n");
 
+    if (*deliveryCount < Max_deliveries)
+{
+    deliveries[*deliveryCount][0] = src - 1;        // source city index
+    deliveries[*deliveryCount][1] = dest - 1;       // destination city index
+    deliveries[*deliveryCount][2] = distance;       // distance
+    deliveries[*deliveryCount][3] = estTime;        // delivery time
+    deliveries[*deliveryCount][4] = customerCharge; // total charge (revenue)
+    deliveries[*deliveryCount][5] = profit;         // profit
+    (*deliveryCount)++;
+
+    printf("\nDelivery record saved successfully! Total deliveries: %d\n", *deliveryCount);
+}
+else
+{
+    printf("\n⚠Maximum of %d deliveries reached.\n", Max_deliveries);
+}
+
+}
+
+void viewAllDeliveries(char cityName[Max_city][Max_character],float deliveries[Max_deliveries][6], int deliveryCount)
+{
+    if (deliveryCount == 0) {
+        printf("\nNo deliveries recorded yet.\n");
+        return;
+    }
+    printf("\n================= DELIVERY RECORDS =================\n");
+    for (int i = 0; i < deliveryCount; i++) {
+        int src = (int)deliveries[i][0];
+        int dest = (int)deliveries[i][1];
+        float distance = deliveries[i][2];
+        float time = deliveries[i][3];
+        float revenue = deliveries[i][4];
+        float profit = deliveries[i][5];
+
+        printf("%d. %s to %s | Distance: %.2f km | Time: %.2f h | Revenue: %.2f LKR | Profit: %.2f LKR\n",i + 1, cityName[src], cityName[dest], distance, time, revenue, profit);
+    }
+    printf("====================================================\n");
 }
 
 
