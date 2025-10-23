@@ -16,6 +16,7 @@ void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCi
 int editCityDistance(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
 void calcDeliveryCost(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count,float deliveries[][6],int *deliveryCount);
 void viewAllDeliveries(char cityName[Max_city][Max_character],float deliveries[Max_deliveries][6], int deliveryCount);
+void findingLowCostWay(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
 
 int main()
 {
@@ -29,7 +30,8 @@ int main()
     displayDistanceTable(cityName, distanceCity, cityCount);
 
     int choice;
-    do {
+    do
+    {
         printf("\n========== MAIN MENU ==========\n");
         printf("1. Display Cities\n");
         printf("2. Rename City\n");
@@ -37,6 +39,7 @@ int main()
         printf("4. Edit City Distance\n");
         printf("5. Calculate Delivery Cost\n");
         printf("6. View All Deliveries\n");
+        printf("7. Find Least-Cost Route Between Two Cities\n");
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -44,45 +47,50 @@ int main()
 
         switch (choice)
         {
-            case 1:
-                displayCities(cityName, cityCount);
-                displayDistanceTable(cityName, distanceCity, cityCount);
-                break;
+        case 1:
+            displayCities(cityName, cityCount);
+            displayDistanceTable(cityName, distanceCity, cityCount);
+            break;
 
-            case 2:
-                renameCity(cityName, cityCount);
-                displayCities(cityName, cityCount);
-                displayDistanceTable(cityName, distanceCity, cityCount);
-                break;
+        case 2:
+            renameCity(cityName, cityCount);
+            displayCities(cityName, cityCount);
+            displayDistanceTable(cityName, distanceCity, cityCount);
+            break;
 
-            case 3:
-                deleteCityName(cityName, &cityCount);
-                displayCities(cityName, cityCount);
-                displayDistanceTable(cityName, distanceCity, cityCount);
-                break;
+        case 3:
+            deleteCityName(cityName, &cityCount);
+            displayCities(cityName, cityCount);
+            displayDistanceTable(cityName, distanceCity, cityCount);
+            break;
 
-            case 4:
-                editCityDistance(cityName, distanceCity, cityCount);
-                displayDistanceTable(cityName, distanceCity, cityCount);
-                break;
+        case 4:
+            editCityDistance(cityName, distanceCity, cityCount);
+            displayDistanceTable(cityName, distanceCity, cityCount);
+            break;
 
-            case 5:
-                calcDeliveryCost(cityName, distanceCity, cityCount,deliveries, &deliveryCount);
-                break;
+        case 5:
+            calcDeliveryCost(cityName, distanceCity, cityCount,deliveries, &deliveryCount);
+            break;
 
-            case 6:
-                viewAllDeliveries(cityName, deliveries, deliveryCount);
-                break;
+        case 6:
+            viewAllDeliveries(cityName, deliveries, deliveryCount);
+            break;
 
-            case 0:
-                printf("\nExiting program...\n");
-                break;
+        case 7:
+            findingLowCostWay(cityName, distanceCity, cityCount);
+            break;
 
-            default:
-                printf("\nInvalid choice! Please try again.\n");
+        case 0:
+            printf("\nExiting program...\n");
+            break;
+
+        default:
+            printf("\nInvalid choice! Please try again.\n");
         }
 
-    } while (choice != 0);
+    }
+    while (choice != 0);
 
     return 0;
 }
@@ -311,32 +319,34 @@ void calcDeliveryCost(char cityName[Max_city][Max_character], int distanceCity[M
     printf("======================================================\n");
 
     if (*deliveryCount < Max_deliveries)
-{
-    deliveries[*deliveryCount][0] = src - 1;        // source city index
-    deliveries[*deliveryCount][1] = dest - 1;       // destination city index
-    deliveries[*deliveryCount][2] = distance;       // distance
-    deliveries[*deliveryCount][3] = estTime;        // delivery time
-    deliveries[*deliveryCount][4] = customerCharge; // total charge (revenue)
-    deliveries[*deliveryCount][5] = profit;         // profit
-    (*deliveryCount)++;
+    {
+        deliveries[*deliveryCount][0] = src - 1;
+        deliveries[*deliveryCount][1] = dest - 1;
+        deliveries[*deliveryCount][2] = distance;
+        deliveries[*deliveryCount][3] = estTime;
+        deliveries[*deliveryCount][4] = customerCharge;
+        deliveries[*deliveryCount][5] = profit;
+        (*deliveryCount)++;
 
-    printf("\nDelivery record saved successfully! Total deliveries: %d\n", *deliveryCount);
-}
-else
-{
-    printf("\n⚠Maximum of %d deliveries reached.\n", Max_deliveries);
-}
+        printf("\nDelivery record saved successfully! Total deliveries: %d\n", *deliveryCount);
+    }
+    else
+    {
+        printf("\nMaximum of %d deliveries reached.\n", Max_deliveries);
+    }
 
 }
 
 void viewAllDeliveries(char cityName[Max_city][Max_character],float deliveries[Max_deliveries][6], int deliveryCount)
 {
-    if (deliveryCount == 0) {
+    if (deliveryCount == 0)
+    {
         printf("\nNo deliveries recorded yet.\n");
         return;
     }
     printf("\n================= DELIVERY RECORDS =================\n");
-    for (int i = 0; i < deliveryCount; i++) {
+    for (int i = 0; i < deliveryCount; i++)
+    {
         int src = (int)deliveries[i][0];
         int dest = (int)deliveries[i][1];
         float distance = deliveries[i][2];
@@ -349,7 +359,82 @@ void viewAllDeliveries(char cityName[Max_city][Max_character],float deliveries[M
     printf("====================================================\n");
 }
 
+void findingLowCostWay(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count)
+{
+    int sourceCity,destinationCity;
+    displayCities(cityName, count);
+    printf("\nEnter the number of the source city: ");
+    scanf("%d", &sourceCity);
+    printf("Enter the number of the destination city: ");
+    scanf("%d", &destinationCity);
 
+    if(sourceCity<=0||destinationCity<=0||sourceCity>count||destinationCity>count||sourceCity==destinationCity)
+    {
+        printf("\nInvalid selection! Please choose different valid city numbers.\n");
+        return;
+    }
+    sourceCity=sourceCity-1;
+    destinationCity=destinationCity-1;
+
+    int dist[Max_city], visited[Max_city], prev[Max_city];
+    for (int i = 0; i < count; i++)
+    {
+        dist[i] = 999999;
+        visited[i] = 0;
+        prev[i] = -1;
+    }
+    dist[sourceCity] = 0;
+    for (int i = 0; i < count - 1; i++)
+    {
+        int minium = 999999, u = -1;
+        for (int j = 0; j < count; j++)
+        {
+            if (!visited[j] && dist[j] < minium)
+            {
+                minium = dist[j];
+                u = j;
+            }
+        }
+
+        if (u == -1)
+            break;
+        visited[u] = 1;
+        for (int v = 0; v < count; v++)
+        {
+            if (!visited[v] && distanceCity[u][v] > 0 && dist[u] + distanceCity[u][v] < dist[v])
+            {
+                dist[v] = dist[u] + distanceCity[u][v];
+                prev[v] = u;
+            }
+        }
+    }
+    if (dist[destinationCity] == 999999)
+    {
+        printf("\nNo route found between %s and %s.\n", cityName[sourceCity], cityName[destinationCity]);
+        return;
+    }
+    printf("\n~~~~~~~ LEAST COST (DISTANCE) ROUTE ~~~~~~~\n");
+    printf("From: %s\n", cityName[sourceCity]);
+    printf("To: %s\n", cityName[destinationCity]);
+    printf("Minimum Distance: %d km\n", dist[destinationCity]);
+    int path[Max_city];
+    int pathLen = 0;
+    for (int v = destinationCity; v != -1; v = prev[v])
+        path[pathLen++] = v;
+    printf("Minium distance Route: ");
+    for (int i = pathLen - 1; i >= 0; i--)
+    {
+        printf("%s", cityName[path[i]]);
+        if (i != 0)
+        {
+             printf(" -> ");
+        }
+    }
+    printf("\n=~=~=~=~=~=~=~==~=~=~=~=~=~=~==~=~=~=~=~=~=~=\n");
+
+
+
+}
 
 
 
