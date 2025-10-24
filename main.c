@@ -339,13 +339,17 @@ void calcDeliveryCost(char cityName[Max_city][Max_character], int distanceCity[M
 
 void viewAllDeliveries(char cityName[Max_city][Max_character],float deliveries[Max_deliveries][6], int deliveryCount)
 {
+    float totDistance=0.0,avgTime=0.0,totRevenue=0.0,totProfit=0.0;
+    float longRoute=deliveries[0][2],shortRoute=deliveries[0][2];
+    int longIndex = 0, shortIndex = 0;
+
     if (deliveryCount == 0)
     {
         printf("\nNo deliveries recorded yet.\n");
         return;
     }
     printf("\n================= DELIVERY RECORDS =================\n");
-    for (int i = 0; i < deliveryCount; i++)
+    for (int i = 0; i<deliveryCount; i++)
     {
         int src = (int)deliveries[i][0];
         int dest = (int)deliveries[i][1];
@@ -356,7 +360,45 @@ void viewAllDeliveries(char cityName[Max_city][Max_character],float deliveries[M
 
         printf("%d. %s to %s | Distance: %.2f km | Time: %.2f h | Revenue: %.2f LKR | Profit: %.2f LKR\n",i + 1, cityName[src], cityName[dest], distance, time, revenue, profit);
     }
-    printf("====================================================\n");
+
+    for(int i=0;i<deliveryCount;i++)
+    {
+        totDistance+=deliveries[i][2];
+    }
+     for(int i=0;i<deliveryCount;i++)
+    {
+        avgTime+=deliveries[i][3];
+    }
+     for(int i=0;i<deliveryCount;i++)
+    {
+        totRevenue+=deliveries[i][4];
+    }
+     for(int i=0;i<deliveryCount;i++)
+    {
+        totProfit+=deliveries[i][5];
+    }
+     for(int i=0;i<deliveryCount;i++)
+    {
+        float distance = deliveries[i][2];
+        if (distance > longRoute)
+        {
+            longRoute = distance;
+            longIndex = i;
+        }
+        if (distance < shortRoute)
+        {
+            shortRoute = distance;
+            shortIndex = i;
+        }
+    }
+    printf("\n The Total Distance-%.2f",totDistance);
+    printf("\n The Average time to complete delivery-%.2f",avgTime/deliveryCount);
+    printf("\n The total revenue=%.2f The total profit=%.2f",totRevenue,totProfit);
+     printf("\nThe Longest Route: %s → %s (%.2f km)",cityName[(int)deliveries[longIndex][0]],cityName[(int)deliveries[longIndex][1]],longRoute);
+    printf("\nThe Shortest Route: %s → %s (%.2f km)",cityName[(int)deliveries[shortIndex][0]],cityName[(int)deliveries[shortIndex][1]],shortRoute);
+
+
+    printf("\n====================================================\n");
 }
 
 void findingLowCostWay(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count)
