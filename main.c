@@ -427,8 +427,8 @@ void viewAllDeliveries(char cityName[Max_city][Max_character],float deliveries[M
     printf("\n The Total Distance-%.2f",totDistance);
     printf("\n The Average time to complete delivery-%.2f",avgTime/deliveryCount);
     printf("\n The total revenue=%.2f The total profit=%.2f",totRevenue,totProfit);
-    printf("\nThe Longest Route: %s → %s (%.2f km)",cityName[(int)deliveries[longIndex][0]],cityName[(int)deliveries[longIndex][1]],longRoute);
-    printf("\nThe Shortest Route: %s → %s (%.2f km)",cityName[(int)deliveries[shortIndex][0]],cityName[(int)deliveries[shortIndex][1]],shortRoute);
+    printf("\nThe Longest Route: %s to %s ",cityName[(int)deliveries[longIndex][0]],cityName[(int)deliveries[longIndex][1]],longRoute);
+    printf("\nThe Shortest Route: %s to %s ",cityName[(int)deliveries[shortIndex][0]],cityName[(int)deliveries[shortIndex][1]],shortRoute);
 
 
     printf("\n====================================================\n");
