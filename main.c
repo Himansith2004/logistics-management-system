@@ -11,12 +11,17 @@ int takingCityName(char cityName[Max_city][Max_character]);
 void displayCities(char cityName[Max_city][Max_character], int count);
 int renameCity(char cityName[Max_city][Max_character], int count);
 int deleteCityName(char cityName[Max_city][Max_character], int *count);
+int addCityDur(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city], int count);
 void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city],int count);
 void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
 int editCityDistance(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
 void calcDeliveryCost(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count,float deliveries[][6],int *deliveryCount);
 void viewAllDeliveries(char cityName[Max_city][Max_character],float deliveries[Max_deliveries][6], int deliveryCount);
 void findingLowCostWay(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
+void saveRoutes(char cityName[][Max_character], int distanceCity[][Max_city], int count);
+int loadRoutes(char cityName[][Max_character], int distanceCity[][Max_city]);
+void saveDeliveries(float deliveries[][6], int deliveryCount);
+int loadDeliveries(float deliveries[][6]);
 
 int main()
 {
@@ -24,11 +29,21 @@ int main()
     int distanceCity[Max_city][Max_city];
     float deliveries[Max_deliveries][Delivery_fields];
     int deliveryCount = 0;
-    printf("======Welcome to the LOGISTICS MANAGMENT SYSTEM======\n\n");
+    int cityCount = 0;
 
-    int cityCount = takingCityName(cityName);
-    takingDistance(cityName, distanceCity, cityCount);
-    displayDistanceTable(cityName, distanceCity, cityCount);
+    printf("====== Welcome to the LOGISTICS MANAGEMENT SYSTEM ======\n\n");
+
+    // 🔹 Load existing data if available
+    cityCount = loadRoutes(cityName, distanceCity);
+    deliveryCount = loadDeliveries(deliveries);
+
+    // 🔹 If no data exists, let user input fresh cities
+    if (cityCount == 0)
+    {
+        cityCount = takingCityName(cityName);
+        takingDistance(cityName, distanceCity, cityCount);
+        displayDistanceTable(cityName, distanceCity, cityCount);
+    }
 
     int choice;
     do
@@ -44,57 +59,46 @@ int main()
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
+
         switch (choice)
         {
         case 1:
             displayCities(cityName, cityCount);
             displayDistanceTable(cityName, distanceCity, cityCount);
             break;
-
         case 2:
-             displayCities(cityName, cityCount);
             renameCity(cityName, cityCount);
-            displayCities(cityName, cityCount);
-            displayDistanceTable(cityName, distanceCity, cityCount);
             break;
-
         case 3:
             deleteCityName(cityName, &cityCount);
-            displayCities(cityName, cityCount);
-            displayDistanceTable(cityName, distanceCity, cityCount);
             break;
-
         case 4:
             editCityDistance(cityName, distanceCity, cityCount);
-            displayDistanceTable(cityName, distanceCity, cityCount);
             break;
-
         case 5:
-            displayCities(cityName, cityCount);
-            calcDeliveryCost(cityName, distanceCity, cityCount,deliveries, &deliveryCount);
+            calcDeliveryCost(cityName, distanceCity, cityCount, deliveries, &deliveryCount);
             break;
-
         case 6:
             viewAllDeliveries(cityName, deliveries, deliveryCount);
             break;
-
         case 7:
             findingLowCostWay(cityName, distanceCity, cityCount);
             break;
-
         case 0:
-            printf("\nExiting program...\n");
+            printf("\nSaving all data before exiting...\n");
+            saveRoutes(cityName, distanceCity, cityCount);
+            saveDeliveries(deliveries, deliveryCount);
+            printf("All data saved successfully. Goodbye!\n");
             break;
-
         default:
             printf("\nInvalid choice! Please try again.\n");
         }
 
-    }
-    while (choice != 0);
+    } while (choice != 0);
 
     return 0;
 }
+
 
 
 
@@ -473,6 +477,143 @@ void findingLowCostWay(char cityName[Max_city][Max_character], int distanceCity[
 }
 
 
+void saveRoutes(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count)
+{
+    FILE *f = fopen("routes.txt", "w");
+    if (!f)
+    {
+        printf("Error: Could not save routes file!\n");
+        return;
+    }
+
+    fprintf(f, "==== CITY AND ROUTE DATA ====\n");
+    fprintf(f, "Number of Cities: %d\n\n", count);
+
+    fprintf(f, "--- City List ---\n");
+    for (int i = 0; i < count; i++)
+    {
+        fprintf(f, "%d. %s\n", i + 1, cityName[i]);
+    }
+
+    fprintf(f, "\n--- Distance Matrix (in km) ---\n");
+    for (int i = 0; i < count; i++)
+    {
+        for (int j = 0; j < count; j++)
+        {
+            fprintf(f, "%5d ", distanceCity[i][j]);
+        }
+        fprintf(f, "\n");
+    }
+
+    fclose(f);
+    printf("Routes saved in a readable format (routes.txt)\n");
+}
+
+
+int loadRoutes(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city])
+{
+    FILE *f = fopen("routes.txt", "r");
+    if (!f)
+    {
+        printf("No existing routes file found. Starting fresh.\n");
+        return 0;
+    }
+
+    int count = 0;
+    char line[200];
+
+    // Skip first line
+    fgets(line, sizeof(line), f);
+    fscanf(f, "Number of Cities: %d\n", &count);
+
+    // Skip blank and header lines
+    fgets(line, sizeof(line), f); // blank line
+    fgets(line, sizeof(line), f); // "--- City List ---"
+
+    for (int i = 0; i < count; i++)
+    {
+        fgets(cityName[i], Max_character, f);
+        cityName[i][strcspn(cityName[i], "\n")] = '\0';
+        // Remove "1. " prefix if needed
+        char *dot = strchr(cityName[i], '.');
+        if (dot)
+            memmove(cityName[i], dot + 2, strlen(dot + 2) + 1);
+    }
+
+    // Skip to distance matrix section
+    fgets(line, sizeof(line), f); // blank
+    fgets(line, sizeof(line), f); // "--- Distance Matrix ---"
+
+    for (int i = 0; i < count; i++)
+    {
+        for (int j = 0; j < count; j++)
+        {
+            fscanf(f, "%d", &distanceCity[i][j]);
+        }
+    }
+
+    fclose(f);
+    printf("Routes loaded successfully from routes.txt\n");
+    return count;
+}
+
+
+void saveDeliveries(float deliveries[Max_deliveries][6], int deliveryCount)
+{
+    FILE *f = fopen("deliveries.txt", "w");
+    if (!f)
+    {
+        printf("Error: Could not save deliveries file!\n");
+        return;
+    }
+
+    fprintf(f, "==== DELIVERY HISTORY ====\n");
+    fprintf(f, "Total Deliveries: %d\n\n", deliveryCount);
+
+    fprintf(f, "%-5s %-10s %-10s %-10s %-10s %-12s %-12s\n",
+            "No", "SrcIdx", "DstIdx", "Dist", "Time(h)", "Revenue(LKR)", "Profit(LKR)");
+    fprintf(f, "-------------------------------------------------------------------\n");
+
+    for (int i = 0; i < deliveryCount; i++)
+    {
+        fprintf(f, "%-5d %-10.0f %-10.0f %-10.2f %-10.2f %-12.2f %-12.2f\n",
+                i + 1,
+                deliveries[i][0],
+                deliveries[i][1],
+                deliveries[i][2],
+                deliveries[i][3],
+                deliveries[i][4],
+                deliveries[i][5]);
+    }
+
+    fclose(f);
+    printf("Deliveries saved in a readable format (deliveries.txt)\n");
+}
+
+int loadDeliveries(float deliveries[Max_deliveries][6])
+{
+    FILE *f = fopen("deliveries.txt", "r");
+    if (!f)
+    {
+        printf("No existing deliveries file found. Starting fresh.\n");
+        return 0;
+    }
+
+    int deliveryCount;
+    fscanf(f, "%d\n", &deliveryCount);
+
+    for (int i = 0; i < deliveryCount; i++)
+    {
+        for (int j = 0; j < 6; j++)
+        {
+            fscanf(f, "%f", &deliveries[i][j]);
+        }
+    }
+
+    fclose(f);
+    printf("Deliveries loaded successfully from deliveries.txt\n");
+    return deliveryCount;
+}
 
 
 
