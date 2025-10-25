@@ -24,6 +24,7 @@ int main()
     int distanceCity[Max_city][Max_city];
     float deliveries[Max_deliveries][Delivery_fields];
     int deliveryCount = 0;
+    printf("======Welcome to the LOGISTICS MANAGMENT SYSTEM======\n\n");
 
     int cityCount = takingCityName(cityName);
     takingDistance(cityName, distanceCity, cityCount);
@@ -37,14 +38,12 @@ int main()
         printf("2. Rename City\n");
         printf("3. Delete City\n");
         printf("4. Edit City Distance\n");
-        printf("5. Calculate Delivery Cost\n");
-        printf("6. View All Deliveries\n");
+        printf("5. Book a Ride\n");
+        printf("6. Reports\n");
         printf("7. Find Least-Cost Route Between Two Cities\n");
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
-        getchar(); // consume newline
-
         switch (choice)
         {
         case 1:
@@ -53,6 +52,7 @@ int main()
             break;
 
         case 2:
+             displayCities(cityName, cityCount);
             renameCity(cityName, cityCount);
             displayCities(cityName, cityCount);
             displayDistanceTable(cityName, distanceCity, cityCount);
@@ -70,6 +70,7 @@ int main()
             break;
 
         case 5:
+            displayCities(cityName, cityCount);
             calcDeliveryCost(cityName, distanceCity, cityCount,deliveries, &deliveryCount);
             break;
 
@@ -100,27 +101,20 @@ int main()
 int takingCityName(char cityName[Max_city][Max_character])
 {
     int count=0;
-    char choice;
+    char choice[]="done";
 
     for(int i=0; i<Max_city; i++)
     {
-        printf("Enter the %d city: ",i+1);
+        printf("Enter the %d city(Enter \"done\" if you want to finish): ",i+1);
         fgets(cityName[i],Max_character,stdin);
         cityName[i][strcspn(cityName[i], "\n")] = '\0';
-        count++;
-        printf("Enter \"y\" if you want to and another city otherwise \"n\": ");
-        scanf(" %c",&choice);
-        if(choice == 'n')
+
+        if(strcmp(cityName[i],choice)==0)
         {
             printf("All the cities have been entered.");
             break;
         }
-        else if((choice !='y')&&(choice !='n'))
-        {
-            printf("THE ENTERED NUMBER is not correct!!");
-            break;
-        }
-        getchar();
+        count++;
     }
     return count;
 }
@@ -203,7 +197,7 @@ void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_
 void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count)
 {
     printf("\n\n===== Distance Table (in km) =====\n\n");
-    printf("%-5s", "");
+    printf("%-15s", "");
     for (int i = 0; i < count; i++)
     {
         printf("%-15s", cityName[i]);
@@ -394,7 +388,7 @@ void viewAllDeliveries(char cityName[Max_city][Max_character],float deliveries[M
     printf("\n The Total Distance-%.2f",totDistance);
     printf("\n The Average time to complete delivery-%.2f",avgTime/deliveryCount);
     printf("\n The total revenue=%.2f The total profit=%.2f",totRevenue,totProfit);
-     printf("\nThe Longest Route: %s → %s (%.2f km)",cityName[(int)deliveries[longIndex][0]],cityName[(int)deliveries[longIndex][1]],longRoute);
+    printf("\nThe Longest Route: %s → %s (%.2f km)",cityName[(int)deliveries[longIndex][0]],cityName[(int)deliveries[longIndex][1]],longRoute);
     printf("\nThe Shortest Route: %s → %s (%.2f km)",cityName[(int)deliveries[shortIndex][0]],cityName[(int)deliveries[shortIndex][1]],shortRoute);
 
 
