@@ -11,7 +11,7 @@ int takingCityName(char cityName[Max_city][Max_character]);
 void displayCities(char cityName[Max_city][Max_character], int count);
 int renameCity(char cityName[Max_city][Max_character], int count);
 int deleteCityName(char cityName[Max_city][Max_character], int *count);
-int addCityDur(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city], int count);
+int addCityDur(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city], int *count);
 void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city],int count);
 void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
 int editCityDistance(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
@@ -51,11 +51,12 @@ int main()
         printf("\n========== MAIN MENU ==========\n");
         printf("1. Display Cities\n");
         printf("2. Rename City\n");
-        printf("3. Delete City\n");
-        printf("4. Edit City Distance\n");
-        printf("5. Book a Ride\n");
-        printf("6. Reports\n");
-        printf("7. Find Least-Cost Route Between Two Cities\n");
+        printf("3. Add new city\n");
+        printf("4. Delete City\n");
+        printf("5. Edit City Distance\n");
+        printf("6. Book a Ride\n");
+        printf("7. Reports\n");
+        printf("8. Find Least-Cost Route Between Two Cities\n");
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -70,18 +71,22 @@ int main()
             renameCity(cityName, cityCount);
             break;
         case 3:
+            addCityDur(cityName,distanceCity, &cityCount);
+            break;
+
+        case 4:
             deleteCityName(cityName, &cityCount);
             break;
-        case 4:
+        case 5:
             editCityDistance(cityName, distanceCity, cityCount);
             break;
-        case 5:
+        case 6:
             calcDeliveryCost(cityName, distanceCity, cityCount, deliveries, &deliveryCount);
             break;
-        case 6:
+        case 7:
             viewAllDeliveries(cityName, deliveries, deliveryCount);
             break;
-        case 7:
+        case 8:
             findingLowCostWay(cityName, distanceCity, cityCount);
             break;
         case 0:
@@ -159,7 +164,7 @@ int deleteCityName(char cityName[Max_city][Max_character], int *count)
     printf("Enter the number of the city you want to Delete : ");
     scanf("%d", &keyNum);
     getchar();
-    if (keyNum <= 0 || keyNum > count)
+    if (keyNum <= 0 || keyNum > *count)
     {
         printf("Invalid number! Please try again.\n");
         return deleteCityName(cityName,count);
@@ -196,6 +201,36 @@ void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_
         }
     }
     printf("\nAll distances recorded successfully!\n");
+}
+
+int addCityDur(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city], int *count)
+{
+    if (*count >= Max_city)
+    {
+        printf("Cannot add more cities. Maximum limit reached.\n");
+        return *count;
+    }
+    getchar();
+  printf("Enter the new city name: ");
+    fgets(cityName[*count], Max_character, stdin);
+    cityName[*count][strcspn(cityName[*count], "\n")] = '\0';
+
+
+    printf("\n_Enter distance from the new city (%s) to other cities_\n", cityName[*count]);
+    for (int j = 0; j < *count; j++)
+    {
+        printf("Enter distance between %s and %s (in km): ", cityName[*count], cityName[j]);
+        scanf("%d", &distanceCity[*count][j]);
+        distanceCity[j][*count] = distanceCity[*count][j];
+    }
+    distanceCity[*count][*count] = 0;
+    (*count)++;
+    printf("\nCity '%s' added successfully!\n", cityName[*count - 1]);
+    displayCities(cityName, *count);
+    displayDistanceTable(cityName, distanceCity, *count);
+    saveRoutes(cityName, distanceCity, *count);
+    printf("\nRoutes updated and saved successfully!\n");
+    return 0;
 }
 
 void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count)
