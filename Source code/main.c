@@ -10,7 +10,7 @@
 int takingCityName(char cityName[Max_city][Max_character]);
 void displayCities(char cityName[Max_city][Max_character], int count);
 int renameCity(char cityName[Max_city][Max_character], int count);
-int deleteCityName(char cityName[Max_city][Max_character], int *count);
+int deleteCityName(char cityName[Max_city][Max_character], int *count,int distanceCity[Max_city][Max_city]);
 int addCityDur(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city], int *count);
 void takingDistance(char cityName[Max_city][Max_character],int distanceCity[Max_city][Max_city],int count);
 void displayDistanceTable(char cityName[Max_city][Max_character], int distanceCity[Max_city][Max_city], int count);
@@ -75,7 +75,7 @@ int main()
             break;
 
         case 4:
-            deleteCityName(cityName, &cityCount);
+            deleteCityName(cityName, &cityCount,distanceCity);
             break;
         case 5:
             editCityDistance(cityName, distanceCity, cityCount);
@@ -158,7 +158,7 @@ int renameCity(char cityName[Max_city][Max_character], int count)
     return 0;
 }
 
-int deleteCityName(char cityName[Max_city][Max_character], int *count)
+int deleteCityName(char cityName[Max_city][Max_character], int *count,int distanceCity[Max_city][Max_city])
 {
     int keyNum;
     printf("Enter the number of the city you want to Delete : ");
@@ -167,16 +167,33 @@ int deleteCityName(char cityName[Max_city][Max_character], int *count)
     if (keyNum <= 0 || keyNum > *count)
     {
         printf("Invalid number! Please try again.\n");
-        return deleteCityName(cityName,count);
+        return deleteCityName(cityName,count,distanceCity);
     }
-    int keyN = keyNum - 1;
+    int index = keyNum - 1;
 
-    int i=keyN;
+    int i=index;
     for(i; i<*count-1; i++)
     {
 
         strcpy(cityName[i],cityName[i+1]);
     }
+
+    for (int i = index; i < *count - 1; i++)
+    {
+        for (int j = 0; j < *count; j++)
+        {
+            distanceCity[i][j] = distanceCity[i + 1][j];
+        }
+    }
+
+     for (int i = 0; i < *count - 1; i++)
+    {
+        for (int j = index; j < *count - 1; j++)
+        {
+            distanceCity[i][j] = distanceCity[i][j + 1];
+        }
+    }
+
     (*count)--;
     printf("City deleted successfully!\n");
     displayCities(cityName,*count);
