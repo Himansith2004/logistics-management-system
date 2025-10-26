@@ -1,0 +1,5 @@
+==== DELIVERY HISTORY ====
+Total Deliveries: 0
+
+No    SrcIdx     DstIdx     Dist       Time(h)    Revenue(LKR) Profit(LKR) 
+-------------------------------------------------------------------

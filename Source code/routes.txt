@@ -1,0 +1,20 @@
+==== CITY AND ROUTE DATA ====
+Number of Cities: 7
+
+--- City List ---
+1. Panadura
+2. Colombo
+3. Kandy
+4. Ampara
+5. Nuwara Eliya
+6. Thalawathugoda
+7. Tangalla
+
+--- Distance Matrix (in km) ---
+    0   120   140   331   205   152   123 
+  120     0   150   381   379   123   153 
+  140   150     0   259   956   162   426 
+  331   381   259     0   245   243   156 
+  205   379   956   245     0   253   157 
+  152   123   162   243   253     0   149 
+  123   153   426   156   157   149     0 
