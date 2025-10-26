@@ -1,5 +1,7 @@
 ==== DELIVERY HISTORY ====
-Total Deliveries: 0
+Total Deliveries: 2
 
 No    SrcIdx     DstIdx     Dist       Time(h)    Revenue(LKR) Profit(LKR) 
 -------------------------------------------------------------------
+1     0          4          345.00     7.67       102366.68    20473.34    
+2     0          1          23.00      0.51       6312.00      1262.40     

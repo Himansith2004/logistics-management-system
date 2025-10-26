@@ -1,0 +1,16 @@
+==== CITY AND ROUTE DATA ====
+Number of Cities: 5
+
+--- City List ---
+1. Panadura
+2. Colombo
+3. Kandy
+4. Galle
+5. Jaffna
+
+--- Distance Matrix (in km) ---
+    0    23   143   120   345 
+   23     0    15   150   294 
+  143    15     0   163   276 
+  120   150   163     0   376 
+  345   294   276   376     0 
